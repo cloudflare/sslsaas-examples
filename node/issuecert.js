@@ -20,7 +20,6 @@ const IssueCert = ({
     "X-Auth-Key": config.apiKey
   };
 
-  //
   let zoneID = '';
 
   const customHostnamePayload = () => {
@@ -43,8 +42,6 @@ const IssueCert = ({
     }
     return JSON.stringify(jsonPayload);
   };
-
-
 
   // Return a promise that returns the zoneID for your whitelabeled zone when fulfilled
   const validateZone = () => {
