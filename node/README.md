@@ -1,5 +1,5 @@
 # sslsaas-node
-Sample code that demonstrates how to issue SSL certificates for custom hostnames using Promises in Node.js.
+Sample code that demonstrates how to issue SSL certificates for custom hostnames using Promises in Node.js via the node-fetch library.
 
 ## Installation
 
