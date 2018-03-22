@@ -20,7 +20,7 @@ const IssueCert = ({
     "X-Auth-Key": config.apiKey
   }
 
-  const customHostnamePayload = () => {
+  const customHostnamePayload = (function() {
 
     // Set the customHostname and validation method for provisioning your customer's cert
     let jsonPayload = {
@@ -34,12 +34,11 @@ const IssueCert = ({
     // If specified in customOriginServer parameter, amend the jsoncustomcustomHostnamePayload to
     // include a custom origin server
     if (customOriginServer !== undefined) {
-      Object.defineProperty(jsonPayload, "custom_origin_server", {
-        value: customOriginServer
-      })
+      jsonPayload["custom_origin_server"] = `${customOriginServer}`;
     }
+    console.log(jsonPayload);
     return JSON.stringify(jsonPayload)
-  }
+  })();
 
   let zoneID = ''
 
@@ -66,9 +65,10 @@ const IssueCert = ({
   }
 
   const requestCert = () => {
+    console.log(customHostnamePayload);
     return fetch(`https://api.cloudflare.com/client/v4/zones/${zoneID}/custom_hostnames`, {
         method: 'POST',
-        body: customHostnamePayload(),
+        body: customHostnamePayload,
         headers: hdrs
       })
       .then(res => res.json())
@@ -76,9 +76,13 @@ const IssueCert = ({
         console.log(body)
         return (body.success).toString()
       })
+      .catch(function(e) {
+        console.log(e)
+      })
   }
 
   const getCertStatus = () => {
+
     return fetch(`https://api.cloudflare.com/client/v4/zones/${zoneID}/custom_hostnames?hostname=${customerHostname}`, {
         method: 'GET',
         headers: hdrs
@@ -87,25 +91,29 @@ const IssueCert = ({
       .then(body => {
         return printCertDetailsFromEdge(body)
       })
+      .catch(function(e) {
+        console.log(e)
+      })
   }
 
+  const scheduleStatusCheck = cron.schedule('*/2 * * * *', () => {
+    return getCertStatus()
+  })
+
   const printCertDetailsFromEdge = (body) => {
-    console.log(body)
-    if (typeof body.result.ssl === 'string') {
-      switch (body.result.ssl.status) {
-        case 'pending_validation':
-          console.log(`${customerHostname} still awaiting ${validationMethod} validation`)
-          break
+    switch (body.result[0].ssl.status) {
+      case 'pending_validation':
+        console.log(`${customerHostname} still awaiting ${validationMethod} validation`)
+        break
 
-        case 'active':
-          console.log(`Certificate Provisioned for: ${customerHostname}`)
-          runCron.destroy()
-          break
+      case 'active':
+        console.log(`Certificate Provisioned for: ${customerHostname}`)
+        scheduleStatusCheck.destroy()
+        break
 
-        default:
-          console.log(`${customerHostname} status unknown`)
-          break
-      }
+      default:
+        console.log(`${customerHostname} status unknown`)
+        break
     }
   }
 
@@ -114,9 +122,10 @@ const IssueCert = ({
       return requestCert()
     })
     .then(() => {
-      cron.schedule('* * * * *', () => {
-        return getCertStatus()
-      })
+      return scheduleStatusCheck
+    })
+    .catch(function(e) {
+      console.log(e)
     })
 }
 
