@@ -12,7 +12,7 @@ npm install
 To get started, open up `app.js` and modify the parameters for `issueCert()`:
 ```javascript
 issueCert({
-  customerHostname: 'store.nikitamarie.com',
+  customerHostname: 'store.shoesbynikita.com',
   validationMethod: 'cname',
   customOriginServer: 'dedicated-sneaker-server.saasprovider.com' // Optional
 })
