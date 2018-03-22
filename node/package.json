@@ -1,0 +1,18 @@
+{
+  "name": "sslsaas-node",
+  "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/shagamemnon/sslsaas-examples.git"
+  },
+  "engines": {
+    "node": "8.9.0"
+  },
+  "dependencies": {
+    "node-cron": "^1.2.1",
+    "node-fetch": "^2.1.1"
+  },
+  "scripts": {
+    "start": "node app.js"
+  }
+}
