@@ -81,6 +81,14 @@ const IssueCert = ({
       })
   }
 
+  // Here, we set a cron job to monitor the status of the certificate
+  const scheduleStatusCheck = cron.schedule('*/15 * * * * *', () => {
+    return getCertStatus()
+  })
+
+  // Make API calls to Cloudflare's custom hostnames endpoint, and print the
+  // status of the customer's certificate issuance once the json response
+  // has been received
   const getCertStatus = () => {
 
     return fetch(`https://api.cloudflare.com/client/v4/zones/${zoneID}/custom_hostnames?hostname=${customerHostname}`, {
@@ -96,16 +104,26 @@ const IssueCert = ({
       })
   }
 
-  const scheduleStatusCheck = cron.schedule('*/2 * * * *', () => {
-    return getCertStatus()
-  })
-
+  // Print a statement with the current status of the certificate issue
+  // pending_validation: the customer has pointed a cname record to saasprovider.com.
+  // pending_issuance: Cloudflare's CA has received the certificate request
+  // pending_deployment: Cloudflare's CA has approved the request
+  // active: Cloudflare has received the cert and is now serving it
   const printCertDetailsFromEdge = (body) => {
     switch (body.result[0].ssl.status) {
       case 'pending_validation':
         console.log(`${customerHostname} still awaiting ${validationMethod} validation`)
-        break
+        break;
 
+      case 'pending_issuance':
+        console.log(`Issuance pending for ${customerHostname}`);
+        break;
+
+      case 'pending_deployment':
+        console.log(`Certificate issued for ${customerHostname}. Now pending deployment`);
+        break;
+
+        // End the cron job when the certificate is provisioned.
       case 'active':
         console.log(`Certificate Provisioned for: ${customerHostname}`)
         scheduleStatusCheck.destroy()
