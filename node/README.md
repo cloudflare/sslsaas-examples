@@ -8,7 +8,8 @@ Requires Node version v5.0.0 or later
 cd sslsaas-examples/node && npm install
 ```
 ## Usage
-This code can run as a standalone application or be mounted onto an existing Node.js server. To get started, open up `app.js` and modify the parameters for `issueCert()`:
+* This code can run as a standalone application or be mounted onto an existing Node.js server. 
+* To get started, open up `app.js` and modify the parameters for `issueCert()`:
 ```javascript
 
 // Example
@@ -22,7 +23,7 @@ issueCert({
 The customer subdomain to which you want to issue a certificate
 
 **`validationMethod`**
-The method you're using to verify customer's domain ownership (`'cname'` or `'http'`)
+_Optional_: The method you're using to verify the customer's domain ownership (`'http'` or `'cname'`). Defaults to `http`.
 
 **`customOriginServer`**
 _Optional_: The address for the custom origin server designated for this customer. If you choose to specify this param, there MUST be a valid DNS or LB record (wildcards are accepted) in your Cloudflare account before a certificate will be issued.
