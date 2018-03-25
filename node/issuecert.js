@@ -9,7 +9,7 @@ const config = {
 
 const IssueCert = ({
   customerHostname,
-  validationMethod,
+  validationMethod = 'cname',
   customOriginServer
 }) => {
 
