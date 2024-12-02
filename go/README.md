@@ -27,7 +27,7 @@ DNS provider to do wildcard resolution to your Managed CNAME zone.
 
 For example, *.customer-domain.com should resolve to whitelabel.yourzone.com.
 
-You should also explicitly specifiy the zone in which the whitelabel hostname
+You should also explicitly specify the zone in which the whitelabel hostname
 resides as this is how the program checks to see that the auto-generated
 "customer" hostname points in to your domain correctly (via CNAME).
 
